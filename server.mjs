@@ -15,28 +15,108 @@ const port = process.env.PORT || 3000;
 //     port = 3000
 // }
 
-let users = [];
+let users = []; // TODO: replace this with mongoDB
+
+function randomNumber() {
+    return Math.floor(Math.random() * 100000000000);
+}
 
 
 app.post("/user", (req, res) => {
 
     console.log(req.body);
 
-    users.push(req.body);
+    let newUser = {
+        id: randomNumber(),
+        fullname: req.body.fullname,
+        username: req.body.username,
+        password: req.body.password
+    }
 
+    users.push(newUser);
     res.send("user is created");
 })
 
-app.get("/user", (req, res) => {
+app.get("/user/:userId", (req, res) => { // get single user
+
+    let userId = req.params.userId;
+    let isFound = false;
+
+    for (let i = 0; i < users.length; i++) {
+        if (users[i].id == userId) {
+            res.send(users[i]);
+            isFound = true;
+            break;
+        }
+    }
+    if (!isFound) {
+        res.send("user not found");
+    }
+})
+
+app.get("/users", (req, res) => { // get all users
     res.send(users);
 })
 
-app.put("/user", (req, res) => {
+app.put("/user/:userId", (req, res) => { // to modify single user
     res.send("your user is modified");
+
+    let userId = req.params.userId;
+    let userIndex = -1
+
+    for (let i = 0; i < users.length; i++) {
+        if (users[i].id == userId) {
+            userIndex = i;
+            break;
+        }
+    }
+
+    if (userIndex === -1) {
+        res.send("user not found");
+    } else {
+
+        if (req.body.fullname) {
+            users[userIndex].fullname = req.body.fullname
+        };
+        if (req.body.username) {
+            users[userIndex].username = req.body.username
+        };
+        if (req.body.password) {
+            users[userIndex].password = req.body.password
+        };
+
+        res.send(users[userIndex]);
+    }
 })
 
-app.delete("/user", (req, res) => {
-    res.send("your user is modified");
+app.delete("/user/:userId", (req, res) => { // delete single user
+
+    let userId = req.params.userId;
+    let userIndex = -1
+
+    for (let i = 0; i < users.length; i++) {
+        if (users[i].id == userId) {
+            userIndex = i;
+            break;
+        }
+    }
+
+    if (userIndex === -1) {
+
+        res.send("user not found");
+
+    } else {
+
+        users.splice(userIndex, 1);
+        res.send("user is deleted");
+    }
+})
+
+app.delete("/users", (req, res) => { // delete all users
+    
+    users = [];
+    
+    res.send("all users deleted");
 })
 
 
