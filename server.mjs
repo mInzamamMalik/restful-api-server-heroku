@@ -24,7 +24,7 @@ function randomNumber() {
 
 app.post("/user", (req, res) => {
 
-    console.log(req.body);
+    console.log(req.body); // https://expressjs.com/en/4x/api.html#req.body
 
     let newUser = {
         id: randomNumber(),
@@ -34,7 +34,7 @@ app.post("/user", (req, res) => {
     }
 
     users.push(newUser);
-    res.send("user is created");
+    res.status(201).send("user is created");
 })
 
 app.get("/user/:userId", (req, res) => { // get single user
@@ -50,7 +50,7 @@ app.get("/user/:userId", (req, res) => { // get single user
         }
     }
     if (!isFound) {
-        res.send("user not found");
+        res.status(204).send("user not found");
     }
 })
 
@@ -72,7 +72,7 @@ app.put("/user/:userId", (req, res) => { // to modify single user
     }
 
     if (userIndex === -1) {
-        res.send("user not found");
+        res.status(204).send("user not found");
     } else {
 
         if (req.body.fullname) {
@@ -103,6 +103,7 @@ app.delete("/user/:userId", (req, res) => { // delete single user
 
     if (userIndex === -1) {
 
+        res.status(204)
         res.send("user not found");
 
     } else {
